@@ -3,7 +3,6 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
-
 from app.application import Application
 
 #  Run Behave tests with Allure results; it will run all the test from feature folder and stored in test_results file
@@ -18,30 +17,42 @@ def browser_init(context, scenario_name):
     """
 
     # BrowserStack credentials
-    bs_user = 'danielachiselenc_VWo7fR'
-    bs_key = 'LQ9LBkxj9w7egjACmDQa'
-    url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
+    # bs_user = 'danielachiselenc_VWo7fR'
+    # bs_key = 'LQ9LBkxj9w7egjACmDQa'
+    # url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
 
-    # Define BrowserStack options
-    bstack_options = {
-        'osVersion': 'Sonoma',
-        'browserName': 'Chrome',
-        'os': 'OS X',
-        'browserVersion': 'latest',
-        'consoleLogs': 'info',
-        'sessionName': scenario_name,
-    }
+    # # Define BrowserStack options
+    # bstack_options = {
+    #     'osVersion': 'Sonoma',
+    #     'browserName': 'Chrome',
+    #     'os': 'OS X',
+    #     'browserVersion': 'latest',
+    #     'consoleLogs': 'info',
+    #     'sessionName': scenario_name,
+    # }
 
     # Set up WebDriver with BrowserStack
-    options = Options()
-    options.set_capability('bstack:options', bstack_options)
-    context.driver = webdriver.Remote(command_executor=url, options=options)
+    # options = Options()
+    # options.set_capability('bstack:options', bstack_options)
+    # context.driver = webdriver.Remote(command_executor=url, options=options)
+    #
+
+    # MOBILE EMULATION #
+    mobile_emulation = {"deviceName": "iPhone XR"}
+
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+
+    driver_path = ChromeDriverManager().install()
+    service = Service(driver_path)
+    context.driver = webdriver.Chrome(service=service, options=chrome_options)
 
     context.driver.maximize_window()
     context.driver.implicitly_wait(6)
     context.wait = WebDriverWait(context.driver, timeout=15)
 
     context.app = Application(context.driver)
+
 
 def before_scenario(context, scenario):
     print('\nStarted scenario: ', scenario.name)

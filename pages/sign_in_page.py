@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 class SigninPage(Page):
     BACK_TXT = (By.XPATH, '//div[text()="Back"]')
     CONTINUE_BTN = (By.XPATH, "//a[text()='Continue']")
-    SETTINGS_OPTION = (By.XPATH, "//div[text()='Settings']")
+    SETTINGS_OPTION = (By.XPATH, "//a[contains(@class, 'menu-button-wrapper')]")
     SUBSCRIPTION_AND_PAYMENT = (By.CSS_SELECTOR, 'a.page-setting-block[href="/subscription"]')
     SUBSCRIPTION_AND_PAYMENT_TXT = (By.XPATH, "//div[text()='Subscription & payments']")
     UPGRADE_PLAN_BTN =(By.XPATH, "//div[text()='Upgrade plan']")
@@ -39,7 +39,12 @@ class SigninPage(Page):
         self.wait_until_clickable(*self.SETTINGS_OPTION)
 
     def click_subscription_and_payments(self, context):
-        self.wait_until_clickable(*self.SUBSCRIPTION_AND_PAYMENT)
+        # self.wait_until_clickable(*self.SUBSCRIPTION_AND_PAYMENT)
+        element = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.SUBSCRIPTION_AND_PAYMENT)
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        element.click()
 
 
     def verify_subscription_and_payments_text(self):
